@@ -11,13 +11,9 @@ public class AccountManager {
             this.logger = logger;
         }
 
-        public void register(String username, String password) {
-            // hamza will work here
-        }
-
-        public boolean login(String username, String password) {
-            // hamza will work here
-            return false;
-        }
+    public RegistrationStatus registerUser(String username, String rawPassword) {
+        // hamza will implement this later
+        return RegistrationStatus.SUCCESS; // temporary just so it compiles
+    }
     }
 
