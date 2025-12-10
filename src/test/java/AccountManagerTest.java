@@ -26,6 +26,11 @@
 
 
             assertEquals(RegistrationStatus.SUCCESS, result);
+
+            verify(passwordEncoder, times(1)).encode(password);
+            verify(userRepository, times(1)).saveUser(username, "HASHED");
+            // logger should be called ONCE with a message containing the username
+            verify(logger, times(1)).logInfo(contains(username));
         }
 
         // US-02 : INVALID_INPUT
@@ -40,6 +45,10 @@
 
 
             assertEquals(RegistrationStatus.INVALID_INPUT, result);
+
+            verify(passwordEncoder, never()).encode(any());
+            verify(userRepository, never()).saveUser(any(), any());
+            verify(logger, never()).logInfo(any());
         }
 
         @Test
@@ -53,6 +62,10 @@
 
 
             assertEquals(RegistrationStatus.INVALID_INPUT, result);
+
+            verify(passwordEncoder, never()).encode(any());
+            verify(userRepository, never()).saveUser(any(), any());
+            verify(logger, never()).logInfo(any());
         }
 
         // US-03 : INVALID_FORMAT
@@ -67,6 +80,10 @@
 
 
             assertEquals(RegistrationStatus.INVALID_FORMAT, result);
+
+            verify(passwordEncoder, never()).encode(any());
+            verify(userRepository, never()).saveUser(any(), any());
+            verify(logger, never()).logInfo(any());
         }
 
         @Test
@@ -77,6 +94,10 @@
             RegistrationStatus result = accountManager.registerUser(username, password);
 
             assertEquals(RegistrationStatus.INVALID_FORMAT, result);
+
+            verify(passwordEncoder, never()).encode(any());
+            verify(userRepository, never()).saveUser(any(), any());
+            verify(logger, never()).logInfo(any());
         }
 
         @Test
@@ -87,6 +108,10 @@
             RegistrationStatus result = accountManager.registerUser(username, password);
 
             assertEquals(RegistrationStatus.INVALID_FORMAT, result);
+
+            verify(passwordEncoder, never()).encode(any());
+            verify(userRepository, never()).saveUser(any(), any());
+            verify(logger, never()).logInfo(any());
         }
 
         // US-04 : USER ALREADY EXISTS
@@ -103,6 +128,11 @@
 
 
             assertEquals(RegistrationStatus.INVALID_USERNAME_ALREADY_EXISTS, result);
+
+            verify(userRepository, times(1)).userExists(username);
+            verify(passwordEncoder, never()).encode(any());
+            verify(userRepository, never()).saveUser(any(), any());
+            verify(logger, never()).logInfo(any());
         }
 
     }
