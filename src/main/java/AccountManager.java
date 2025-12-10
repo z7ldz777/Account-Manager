@@ -1,57 +1,66 @@
 public class AccountManager {
-        private final IUserRepository userRepository;
-        private final IPasswordEncoder passwordEncoder;
-        private final ILogger logger;
-    private static final int USERNAME_MIN = 5;  // Example value
-    private static final int USERNAME_MAX = 20; // Example value
-    private static final int PASSWORD_MIN = 8;  // Example value based on your code further down
 
-        public AccountManager(IUserRepository userRepository,
-                              IPasswordEncoder passwordEncoder,
-                              ILogger logger) {
-            this.userRepository = userRepository;
-            this.passwordEncoder = passwordEncoder;
-            this.logger = logger;
-        }
+    // Dependencies
+    private final IUserRepository userRepository;
+    private final IPasswordEncoder passwordEncoder;
+    private final ILogger logger;
+
+    // Validation rules
+    private static final int USERNAME_MIN = 5;
+    private static final int USERNAME_MAX = 20;
+    private static final int PASSWORD_MIN = 8;
+
+    public AccountManager(IUserRepository userRepository,
+                          IPasswordEncoder passwordEncoder,
+                          ILogger logger) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.logger = logger;
+    }
 
     public RegistrationStatus registerUser(String username, String rawPassword) {
-        // us-02 : INVALID_INPUT (null or empty username/password)
-        if (username == null || username.trim().isEmpty()
-                || rawPassword == null || rawPassword.trim().isEmpty()) {
-            return RegistrationStatus.INVALID_INPUT;
+
+        if (isNullOrEmpty(username) || isNullOrEmpty(rawPassword)) {
+            return RegistrationStatus.INVALID_INPUT; // us-02
         }
 
-        // us-03 : INVALID_FORMAT (Username)
-        if (username.length() < USERNAME_MIN || username.length() > USERNAME_MAX) {
-            return RegistrationStatus.INVALID_FORMAT;
+        if (!isValidUsername(username) || !isValidPassword(rawPassword)) {
+            return RegistrationStatus.INVALID_FORMAT; // us-03
         }
 
-        // us-03 : INVALID_FORMAT (Password)
-        if (rawPassword.length() < PASSWORD_MIN || !containsDigit(rawPassword)) {
-            return RegistrationStatus.INVALID_FORMAT;
-        }
-
-        // us-04 : Username already exists
         if (userRepository.userExists(username)) {
-            return RegistrationStatus.INVALID_USERNAME_ALREADY_EXISTS;
+            return RegistrationStatus.INVALID_USERNAME_ALREADY_EXISTS; // us-04
         }
 
-        //  us-01: SUCCESS
-        String hashedPassword = passwordEncoder.encode(rawPassword);
-        userRepository.saveUser(username, hashedPassword);
+        // us-01: SUCCESS
+        String hashed = passwordEncoder.encode(rawPassword);
+        userRepository.saveUser(username, hashed);
         logger.logInfo("User registered: " + username);
 
         return RegistrationStatus.SUCCESS;
     }
 
-    private boolean containsDigit(String password) {
-        for (char c : password.toCharArray()) {
-            if (Character.isDigit(c)) {
-                return true;
-            }
+    // -----------------------
+    // Validation Helpers
+    // -----------------------
+
+    private boolean isNullOrEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private boolean isValidUsername(String username) {
+        int len = username.length();
+        return len >= USERNAME_MIN && len <= USERNAME_MAX;
+    }
+
+    private boolean isValidPassword(String password) {
+        return password.length() >= PASSWORD_MIN && containsDigit(password);
+    }
+
+    private boolean containsDigit(String value) {
+        for (char c : value.toCharArray()) {
+            if (Character.isDigit(c)) return true;
         }
         return false;
-
     }
-    }
-
+}

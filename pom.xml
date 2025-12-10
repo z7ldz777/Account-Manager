@@ -7,31 +7,43 @@
     <artifactId>Account-Manager</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.10.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
+    <dependencies>
         <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito -->
+        <!-- Mockito Core -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Mockito JUnit 5 Extension -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
 
     <build>
         <plugins>
